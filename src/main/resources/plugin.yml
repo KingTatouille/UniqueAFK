@@ -1,0 +1,4 @@
+name: UniqueAFK
+version: '${project.version}'
+main: gloryz.com.uniqueafk.UniqueAFK
+api-version: '1.20'
