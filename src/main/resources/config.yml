@@ -1,0 +1,10 @@
+prefix: "[afk] >>"
+
+#It's in seconds.
+afk_time: 30
+
+sentence-player-custom:
+  - message: "The god {player} is afk !"
+    permission: "uniqueafk.playerCustom.1"
+  - message: "The legend {player} is afk !"
+    permission: "uniqueafk.playerCustom.2"
