@@ -6,17 +6,23 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class PlayerDataManager {
     private final UniqueAFK plugin;
 
     public PlayerDataManager(UniqueAFK plugin) {
         this.plugin = plugin;
+        File playersDir = new File(plugin.getDataFolder(), "players");
+        if (!playersDir.exists()) {
+            playersDir.mkdirs();
+        }
+
     }
 
     public YamlConfiguration getPlayerData(Player player) {
-        String playerName = player.getName();
-        File playerFile = new File(plugin.getDataFolder(), playerName + ".yml");
+        UUID playerId = player.getUniqueId();
+        File playerFile = new File(plugin.getDataFolder() + File.separator + "players", playerId.toString() + ".yml");
 
         // Vérifier si le fichier YAML du joueur existe
         if (!playerFile.exists()) {
@@ -27,7 +33,7 @@ public class PlayerDataManager {
                 YamlConfiguration playerData = YamlConfiguration.loadConfiguration(playerFile);
                 playerData.set("location", player.getLocation());
                 playerData.set("afk_count", 0); // Initialiser le nombre de fois où le joueur est AFK à zéro
-                playerData.set("command.afk", "The player " + player.getName() + " is afk !");
+                playerData.set("message.afk", "The player " + player.getName() + " is afk !");
                 playerData.save(playerFile);
                 return playerData;
             } catch (IOException e) {
@@ -41,8 +47,8 @@ public class PlayerDataManager {
 
 
     public void savePlayerData(Player player, YamlConfiguration playerData) {
-        String playerName = player.getName();
-        File playerFile = new File(plugin.getDataFolder(), playerName + ".yml");
+        UUID playerId = player.getUniqueId();
+        File playerFile = new File(plugin.getDataFolder() + File.separator + "players", playerId.toString() + ".yml");
 
         try {
             playerData.save(playerFile);

@@ -1,11 +1,7 @@
 package gloryz.com.uniqueafk;
 
 import gloryz.com.uniqueafk.commands.UniqueAfkCommand;
-import gloryz.com.uniqueafk.commands.UniqueAfkRoomCommand;
-import gloryz.com.uniqueafk.configs.PlayerDataManager;
 import gloryz.com.uniqueafk.listener.PlayerListener;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +12,7 @@ public class UniqueAFK extends JavaPlugin {
     private String prefix;
     private FileConfiguration config;
 
+    private PlayerListener playerListener; // Ajout de l'attribut playerListener
 
     @Override
     public void onEnable() {
@@ -23,9 +20,9 @@ public class UniqueAFK extends JavaPlugin {
         prefix = this.getConfig().getString("prefix");
         loadConfig();
         // Enregistrement des écouteurs d'événements
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        playerListener = new PlayerListener(this); // Initialisation de playerListener
+        getServer().getPluginManager().registerEvents(playerListener, this);
         getCommand("afk").setExecutor(new UniqueAfkCommand(this));
-        getCommand("afk").setExecutor(new UniqueAfkRoomCommand(this));
         getLogger().info("UniqueAfk has been enabled.");
     }
 
@@ -38,7 +35,6 @@ public class UniqueAFK extends JavaPlugin {
         return prefix;
     }
 
-
     private void loadConfig() {
         // Charger la configuration depuis le fichier config.yml
         saveDefaultConfig();
@@ -46,8 +42,12 @@ public class UniqueAFK extends JavaPlugin {
         // Charger d'autres configurations personnalisées si nécessaire
     }
 
-
     public FileConfiguration getPluginConfig() {
         return config;
+    }
+
+    // Méthode pour obtenir le listener du joueur
+    public PlayerListener getPlayerListener() {
+        return playerListener;
     }
 }

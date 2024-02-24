@@ -27,6 +27,7 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
         this.config = plugin.getPluginConfig();
         this.afkTime = config.getInt("afk_time");
+        this.playerDataManager = new PlayerDataManager(plugin);
     }
 
     @EventHandler
@@ -49,7 +50,7 @@ public class PlayerListener implements Listener {
         return !player.hasMetadata("afk") || !player.getMetadata("afk").get(0).asBoolean();
     }
 
-    private void setPlayerAfk(Player player, boolean afk) {
+    public void setPlayerAfk(Player player, boolean afk) {
         player.setMetadata("afk", new FixedMetadataValue(plugin, afk));
 
         // Récupérer les données du joueur depuis son fichier YAML
@@ -62,7 +63,7 @@ public class PlayerListener implements Listener {
         // Mettre à jour les données du joueur
         if (afk) {
             // Exécuter une commande si le joueur devient AFK
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), plugin.getConfig().getString("commands.afk"));
+            Bukkit.broadcastMessage(playerDataManager.getPlayerData(player).getString("message.afk"));
 
             // Incrémenter le nombre de fois où le joueur a été afk
             int afkCount = playerData.getInt("afk_count", 0);
@@ -72,7 +73,7 @@ public class PlayerListener implements Listener {
             playerDataManager.savePlayerData(player, playerData);
 
             // Vérifier si l'option de téléportation AFK est activée
-            if (plugin.getConfig().getBoolean("teleport_enabled", false)) {
+            if (plugin.getConfig().getBoolean("teleport_enabled")) {
                 // Récupérer l'emplacement de la salle AFK depuis la configuration
                 if (plugin.getConfig().contains("afk_room_location")) {
                     Location afkRoomLocation = (Location) plugin.getConfig().get("afk_room_location");
